@@ -1,0 +1,1 @@
+# SharpDox.Plugins.Hugo
