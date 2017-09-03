@@ -1,0 +1,193 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Net" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="SharpDox.Model" #>
+<#@ import namespace="SharpDox.Model.Repository" #>
+<#@ import namespace="SharpDox.Model.Documentation.Token" #>
+<#@ import namespace="SharpDox.Model.Documentation.Article" #>
+<#@ import namespace="SharpDox.Plugins.Hugo.Steps" #>
+<#@ import namespace="SharpDox.UML" #>
++++
+title = "<#= Type.Name #>" 
+description = ""
+weight = <#= Weight #>
+generator = "SharpDox.Plugins.Hugo"
++++
+
+Name|Value
+---|---
+<#= $"Assembly|{Type.Namespace.Assemblyname}" #>
+<#= $"Namespace|{Type.Namespace.Fullname}" #>
+<#= $"Available on|{string.Join(", ", TargetFxs.OrderBy(x => x.Name).Select(x => x.Name))}" #>
+
+
+```
+<#= $"{Type.Syntax}" #>
+```
+
+<#
+
+// Base types
+if (Type.BaseTypes.Count > 0) 
+{
+#>
+**Base types**
+<#= string.Join(",", Type.BaseTypes.Select(baseType => string.Format("[{0}]({1})", baseType.Type.Name, LinkHelper.CreateLocalLink(baseType.Type, RootPath, RootPrefix)))) #>
+
+<#
+} 
+
+
+// Interfaces
+if (Type.ImplementedInterfaces.Count > 0) 
+{
+#>
+**Base types**
+
+<#= string.Join(",", Type.ImplementedInterfaces.Select(baseType => string.Format("[{0}]({1})", baseType.Type.Name, LinkHelper.CreateLocalLink(baseType.Type, RootPath, RootPrefix)))) #>
+
+<#
+} 
+
+
+// Documentation
+var documentation = Type.Documentations.GetElementOrDefault(StepInput.CurrentLanguage);
+if (documentation != null)
+{
+	var documentationTemplate = new DocumentationData 
+	{ 
+		Documentation = documentation
+	};
+
+	var documentationText = documentationTemplate.TransformText();
+	if (!string.IsNullOrWhiteSpace(documentationText)) 
+	{
+#>
+<#= documentationText #>
+<#
+	}
+}
+
+// Fields
+if (Type.Fields.Count > 0) 
+{
+#>
+
+## Fields
+
+<#
+	foreach (var sdField in Type.Fields)
+	{
+		if (IgnorePrivateMembers && sdField.Accessibility.IsNonPublic())
+		{
+			continue;
+		}
+
+#>
+<#= new MemberData { Member = sdField, MemberType = "field", RootPath = RootPath, RootPrefix = RootPrefix }.TransformText() #>
+<#
+	} 
+}
+
+
+// Constructors
+if (Type.Constructors.Count > 0) 
+{
+#>
+
+## Constructors
+
+<#
+	foreach (var sdConstructor in Type.Constructors)
+	{
+		if (IgnorePrivateMembers && sdConstructor.Accessibility.IsNonPublic())
+		{
+			continue;
+		}
+
+#>
+<#= new MemberData { Member = sdConstructor, MemberType = "method", RootPath = RootPath, RootPrefix = RootPrefix }.TransformText() #>
+<#
+	} 
+}
+
+
+// Properties
+if (Type.Properties.Count > 0)
+{
+#>
+
+## Properties
+
+<#
+	foreach (var sdProperty in Type.Properties)
+	{
+		if (IgnorePrivateMembers && sdProperty.Accessibility.IsNonPublic())
+		{
+			continue;
+		}
+
+#>
+<#= new MemberData { Member = sdProperty, MemberType = "property", RootPath = RootPath, RootPrefix = RootPrefix }.TransformText() #>
+<#
+	}
+} 
+
+
+// Events
+if (Type.Events.Count > 0) 
+{
+#>
+
+## Events
+
+<#
+	foreach (var sdEvent in Type.Events)
+	{
+		if (IgnorePrivateMembers && sdEvent.Accessibility.IsNonPublic())
+		{
+			continue;
+		}
+
+#>
+<#= new MemberData { Member = sdEvent, MemberType = "event", RootPath = RootPath, RootPrefix = RootPrefix }.TransformText() #>
+<#
+	} 
+}
+
+
+// Methods
+if (Type.Methods.Count > 0) 
+{
+#>
+
+## Methods
+
+<#
+	foreach (var sdMethod in Type.Methods)
+	{
+		if (IgnorePrivateMembers && sdMethod.Accessibility.IsNonPublic())
+		{
+			continue;
+		}
+
+#>
+<#= new MemberData { Member = sdMethod, MemberType = "method", RootPath = RootPath, RootPrefix = RootPrefix }.TransformText() #>
+<#
+	}
+}
+
+#>
+
+
+<#+	
+public SDType Type { get; set; }
+public SDTargetFx[] TargetFxs { get; set; }
+public bool IgnorePrivateMembers { get; set; }
+public int Weight { get; set; }
+public string RootPath { get; set; }
+public string RootPrefix { get; set; }
+#>

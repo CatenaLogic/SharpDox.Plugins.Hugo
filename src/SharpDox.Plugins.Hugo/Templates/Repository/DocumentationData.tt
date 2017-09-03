@@ -1,0 +1,128 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Net" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="SharpDox.Model" #>
+<#@ import namespace="SharpDox.Model.Documentation" #>
+<#@ import namespace="SharpDox.Model.Documentation.Token" #>
+<#@ import namespace="SharpDox.Model.Documentation.Article" #>
+<#@ import namespace="SharpDox.Plugins.Hugo.Steps" #>
+
+<# 
+
+if (Documentation.Summary.Count > 0) 
+{
+#>
+<#= Documentation.Summary.ToMarkdown(StepInput.SDProject.Tokens).Transform(Helper.TransformLinkToken) #>
+<#
+} 
+
+if (Documentation.TypeParams.Count > 0) 
+{
+#>
+
+#### Type Parameters
+
+<#
+	foreach (var typeParam in Documentation.TypeParams)
+	{
+#>
+
+**<#= typeParam.Key #>**
+<#= typeParam.Value.ToMarkdown(StepInput.SDProject.Tokens).Transform(Helper.TransformLinkToken) #>
+
+<#
+	}	
+}
+
+if (Documentation.Params.Count > 0) 
+{
+#>
+
+#### Parameters
+
+Name|Description
+---|---
+<#
+	foreach (var parameter in Documentation.Params)
+	{
+#>**<#= parameter.Key #>**|<#= parameter.Value.ToMarkdown(StepInput.SDProject.Tokens).Transform(Helper.TransformLinkToken) #>
+<#
+	}
+}
+
+if (Documentation.Returns.ContainsKey("default")) 
+{
+#>
+
+#### Returns
+
+<#= Documentation.Returns["default"].ToMarkdown(StepInput.SDProject.Tokens).Transform(Helper.TransformLinkToken) #>
+
+<#
+}
+
+if (Documentation.Exceptions.Count > 0) 
+{
+#>
+
+#### Exceptions
+
+Name|Description
+---|---
+<#
+	foreach (var exception in Documentation.Exceptions)
+	{
+#>**<#= exception.Key.Replace("!:", string.Empty) #>**|<#= exception.Value.ToMarkdown(StepInput.SDProject.Tokens).Transform(Helper.TransformLinkToken) #>
+<#
+	}
+}
+
+if (Documentation.Example.Count > 0) 
+{
+#>
+
+#### Examples
+
+<#= Documentation.Example.ToMarkdown(StepInput.SDProject.Tokens).Transform(Helper.TransformLinkToken) #>
+
+<#
+}
+
+if (Documentation.Remarks.Count > 0) 
+{
+#>
+
+#### Remarks
+
+<#= Documentation.Remarks.ToMarkdown(StepInput.SDProject.Tokens).Transform(Helper.TransformLinkToken) #>
+
+<#
+}
+
+if (Documentation.SeeAlsos.Count > 0 )
+{
+#>
+
+**See Also***
+
+<#
+	foreach (var sdToken in Documentation.SeeAlsos)
+	{
+		var seeAlso = (SDSeeToken)sdToken;
+#>
+[<#= seeAlso.Name #>](#)
+<#
+    }
+} 
+
+#>
+
+<#+	
+public SDDocumentation Documentation { get; set; } 
+public string RootPath { get; set; }
+public string RootPrefix { get; set; }
+#>

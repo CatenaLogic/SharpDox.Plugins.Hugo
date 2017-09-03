@@ -1,0 +1,64 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Net" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="SharpDox.UML" #>
+<#@ import namespace="SharpDox.Model" #>
+<#@ import namespace="SharpDox.Model.Repository" #>
+<#@ import namespace="SharpDox.Model.Repository.Members" #>
+<#@ import namespace="SharpDox.Model.Documentation" #>
+<#@ import namespace="SharpDox.Model.Documentation.Token" #>
+<#@ import namespace="SharpDox.Model.Documentation.Article" #>
+<#@ import namespace="SharpDox.Plugins.Hugo.Steps" #>
+
+<#
+var method = Member as SDMethod;
+if (method != null) 
+{
+#>
+### <#= method.Signature #>
+<#
+} 
+else 
+{
+#>
+### <#= Member.Name #>
+<#
+}
+
+var fld = Member as SDField;
+if (fld != null && !string.IsNullOrEmpty(fld.ConstantValue))
+{
+#>
+<#= fld.ConstantValue.ToObjectString() #>
+<#
+}
+
+var documentation = Member.Documentations.GetElementOrDefault(StepInput.CurrentLanguage);
+if (documentation != null)
+{
+	var documentationTemplate = new DocumentationData 
+	{ 
+		Documentation = documentation,
+		RootPrefix = RootPrefix
+	};
+
+	var documentationText = documentationTemplate.TransformText();
+	if (!string.IsNullOrWhiteSpace(documentationText)) 
+	{
+#>
+<#= documentationText #>
+<#
+	}
+}
+
+#>
+
+<#+
+public SDMemberBase Member { get; set; }
+public string MemberType { get; set; }
+public string RootPath { get; set; }
+public string RootPrefix { get; set; }
+#>
