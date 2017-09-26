@@ -40,13 +40,11 @@ if (Type.BaseTypes.Count > 0)
 <#
 } 
 
-
 // Interfaces
 if (Type.ImplementedInterfaces.Count > 0) 
 {
 #>
-**Base types**
-
+**Implements interfaces**
 <#= string.Join(",", Type.ImplementedInterfaces.Select(baseType => string.Format("[{0}]({1})", baseType.Type.Name, LinkHelper.CreateLocalLink(baseType.Type, RootPath, RootPrefix)))) #>
 
 <#

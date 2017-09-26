@@ -13,9 +13,19 @@ namespace SharpDox.Plugins.Hugo
 
     internal static class StringExtensions
     {
-        public static bool IsNonPublic(this string accessibility)
+        public static bool IsNonPublic(this string accessibility, bool allowProtected = true)
         {
-            return !accessibility.Contains("public");
+            if (accessibility.Contains("public"))
+            {
+                return true;
+            }
+
+            if (allowProtected && accessibility.Contains("protected"))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public static string ToObjectString(this string text)

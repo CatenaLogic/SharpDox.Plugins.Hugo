@@ -113,7 +113,6 @@ if (Type.BaseTypes.Count > 0)
 
 } 
 
-
 // Interfaces
 if (Type.ImplementedInterfaces.Count > 0) 
 {
@@ -121,7 +120,7 @@ if (Type.ImplementedInterfaces.Count > 0)
             
             #line default
             #line hidden
-            this.Write("\n**Base types**\n\n");
+            this.Write("\n**Implements interfaces**\n");
             
             #line 6 "C:\Source\SharpDox.Plugins.Hugo\src\SharpDox.Plugins.Hugo\Templates\Repository\TypeData.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(",", Type.ImplementedInterfaces.Select(baseType => string.Format("[{0}]({1})", baseType.Type.Name, LinkHelper.CreateLocalLink(baseType.Type, RootPath, RootPrefix))))));

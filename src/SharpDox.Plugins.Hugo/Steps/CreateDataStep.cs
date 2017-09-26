@@ -136,7 +136,7 @@ namespace SharpDox.Plugins.Hugo.Steps
                 var type = sdType.Value.First().Item1;
                 var targetFxs = sdType.Value.Select(x => x.Item2).ToList();
 
-                if (IgnorePrivateMembers && type.Accessibility.IsNonPublic())
+                if (IgnorePrivateMembers && type.Accessibility.IsNonPublic(false))
                 {
                     continue;
                 }

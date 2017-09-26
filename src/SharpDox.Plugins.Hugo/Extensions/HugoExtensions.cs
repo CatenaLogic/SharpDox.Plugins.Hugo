@@ -80,6 +80,9 @@ namespace SharpDox.Plugins.Hugo
 
         public static string CleanUp(this string content)
         {
+            // Replace < and >
+            content = content.Replace("<", "&lt;").Replace(">", "&gt;");
+
             foreach (var newlineReplacement in NewlineReplacements)
             {
                 content = content.Replace(newlineReplacement, "\n\n");
